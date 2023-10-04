@@ -34,13 +34,14 @@ datos:
 - Número de palabras que almacena la cadena
 - Devuelve la cadena escrita en mayúscula
 
+```php
 <?php
 $cadena="Esto es un string de varias palabras";
 //Número de caracteres que almacena la cadena
 //Devuelve la cadena escrita en mayúscula
 //Número de palabras que almacena la cadena
 ?>
-
+```
 11. Crea una constante llamada STOCK que tenga el valor 100 y que distinga entre minúsculas/mayúsculas
 
 12. Escribe un programa que resuelva ecuaciones de segundo grado (ax2 + bx + c = 0). Si la ecuación no tiene soluciones reales, hay que mostrar un mensaje de error. Usa funciones para ello. La función recibirá los coeficientes de la ecuación y devolverá un array con las soluciones reales. Si no hay soluciones devolverá false.

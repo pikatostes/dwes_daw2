@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <form action="e12.php" method="get">
+    <form action="e12.php" method="post">
         <input type="number" name="a">x<sup>2</sup> +
         <input type="number" name="b">x +
         <input type="number" name="c">
@@ -18,8 +18,13 @@
     </form>
 
     <?php
+    // Ejercicio 12
+    /*
+    12. Escribe un programa que resuelva ecuaciones de segundo grado (ax2 + bx + c = 0). Si la ecuación no tiene soluciones reales, hay que mostrar un mensaje de error. Usa funciones para ello. La función recibirá los coeficientes de la ecuación y devolverá un array con las soluciones reales. Si no hay soluciones devolverá false.
+    */
     // Función para resolver una ecuación cuadrática
-    function resolverEcuacionCuadratica($a, $b, $c) {
+    function resolverEcuacionCuadratica($a, $b, $c)
+    {
         $discriminante = ($b ** 2) - (4 * $a * $c);
 
         if ($discriminante > 0) {
@@ -37,10 +42,10 @@
         }
     }
 
-    if (isset($_GET["a"]) && isset($_GET["b"]) && isset($_GET["c"])) {
-        $a = $_GET["a"];
-        $b = $_GET["b"];
-        $c = $_GET["c"];
+    if (isset($_POST["a"]) && isset($_POST["b"]) && isset($_POST["c"])) {
+        $a = $_POST["a"];
+        $b = $_POST["b"];
+        $c = $_POST["c"];
 
         // Llamar a la función para resolver la ecuación cuadrática
         $soluciones = resolverEcuacionCuadratica($a, $b, $c);
