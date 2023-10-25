@@ -8,47 +8,72 @@
 </head>
 
 <body>
-
-
 	<div id="encabezado">
-		<h1>Ejercicio: </h1>
-		<form id="form_seleccion" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
-		</form>
+		<h1>Ejercicio:</h1>
+		<form id="form_seleccion" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post"></form>
 	</div>
 
 	<div id="contenido">
-		<h2>Contenido</h2>
 		<?php
-		// Configura la conexión a la base de datos
-		$servername = "localhost";  // Dirección del servidor MySQL (generalmente es localhost)
-		$username = "root";         // Nombre de usuario de MySQL (por defecto es root)
-		$password = "";             // Contraseña de MySQL (por defecto, dejar en blanco)
-		$database = "dwes";         // Nombre de la base de datos
+		include 'tables.php';
 
-		// Crea la conexión a la base de datos
-		$conn = new mysqli($servername, $username, $password, $database);
+		$conn = connectToDatabase();
 
-		// Verifica la conexión
-		if ($conn->connect_error) {
-			die("Conexión fallida: " . $conn->connect_error);
-		}
-
-		// Realiza la consulta SELECT
-		$sql = "SELECT * FROM producto";
+		// Realiza la consulta SELECT a la tabla "producto"
+		$sql = "SELECT cod, nombre_corto FROM producto";
 		$result = $conn->query($sql);
+		?>
+		<h2>Contenido</h2>
+		<form action="" method="post">
+			<label for="productos">Selecciona un producto:</label>
+			<select name="productos" id="productos">
+				<?php
+				if ($result->num_rows > 0) {
+					// Recorre las filas y crea opciones para el select
+					while ($row = $result->fetch_assoc()) {
+						echo '<option value="' . $row["cod"] . '">' . $row["nombre_corto"] . '</option>';
+					}
+				} else {
+					echo '<option value="">No hay productos disponibles</option>';
+				}
+				?>
+			</select>
+			<input type="submit" value="Seleccionar">
+		</form>
 
-		// Verifica si la consulta fue exitosa
-		if ($result->num_rows > 0) {
-			// Muestra los resultados
-			while ($row = $result->fetch_assoc()) {
-				echo "ID: " . $row["cod"] . " - Nombre: " . $row["nombre"] . " - Descripción: " . $row["nombre_corto"] . "<br>";
+		<?php
+		if (isset($_POST["productos"])) {
+			$productCod = $_POST["productos"];
+			$stock = getStockByProductCod($productCod);
+
+			if (!empty($stock)) {
+				echo "<h2>Modificar Stock del producto seleccionado:</h2>";
+				echo "<form action='' method='post'>";
+				echo "<input type='hidden' name='product_cod' value='$productCod'>";
+
+				foreach ($stock as $entry) {
+					$tienda = $entry["tienda"];
+					$unidades = $entry["unidades"];
+					echo "<label for='$tienda'>Tienda $tienda:</label>";
+					echo "<input type='number' name='stock[$tienda]' value='$unidades'><br>";
+				}
+
+				echo "<input type='submit' value='Guardar Cambios'>";
+				echo "</form>";
+			} else {
+				echo "<p>No se encontró stock para este producto.</p>";
 			}
-		} else {
-			echo "No se encontraron resultados.";
+		}
+		if (isset($_POST["product_cod"]) && isset($_POST["stock"])) {
+			$productCod = $_POST["product_cod"];
+			$stockData = $_POST["stock"];
+
+			updateStock($productCod, $stockData);
+
+
+			echo "Los cambios en el stock han sido guardados exitosamente.";
 		}
 
-		// Cierra la conexión a la base de datos
-		$conn->close();
 		?>
 	</div>
 
