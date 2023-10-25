@@ -56,22 +56,4 @@ function showTable($table) {
         echo "No se encontraron resultados.";
     }
 }
-
-function registerUser($user, $password) {
-    // Conectar a la base de datos
-    $databaseConnection = connectToDatabase();
-
-    // Puedes adaptar esta función para insertar un usuario en la tabla de usuarios
-    $sql = "INSERT INTO users (user, password) VALUES (?, ?)";
-    $stmt = $databaseConnection->prepare($sql);
-    $stmt->bind_param("ss", $user, $password);
-
-    if ($stmt->execute()) {
-        echo "Usuario registrado con éxito.";
-    } else {
-        echo "Error al registrar el usuario: " . $stmt->error;
-    }
-    $stmt->close();
-    $databaseConnection->close();
-}
 ?>
