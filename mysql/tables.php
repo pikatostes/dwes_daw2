@@ -22,11 +22,10 @@ function showTable($table) {
         return;
     }
 
-    $sql = "SHOW TABLES LIKE ?";
-    $stmt = $databaseConnection->prepare($sql);
-    $stmt->bind_param("s", $table);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // Construye la consulta SQL directamente con el nombre de la tabla
+    $sql = "SHOW TABLES LIKE '$table'";
+    
+    $result = $databaseConnection->query($sql);
 
     if ($result->num_rows == 0) {
         echo "La tabla '" . $table . "' no existe en la base de datos.";
@@ -34,7 +33,6 @@ function showTable($table) {
         displayTable($table, $databaseConnection);
     }
 
-    $stmt->close();
     $databaseConnection->close();
 }
 
@@ -112,3 +110,51 @@ function updateStock($productCod, $stockData) {
     // Cierra la conexión a la base de datos
     $conn->close();
 }
+
+function getTableStructure($tableName) {
+    $databaseConnection = connectToDatabase();
+    $fields = [];
+
+    $sql = "DESCRIBE $tableName";
+    $result = $databaseConnection->query($sql);
+
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $fields[] = $row["Field"];
+        }
+        $result->free();
+    }
+
+    return $fields;
+}
+
+function insertData($tableName, $data) {
+    $databaseConnection = connectToDatabase();
+
+    $fields = getTableStructure($tableName);
+    $fieldNames = implode(', ', $fields);
+    $placeholders = implode(', ', array_fill(0, count($fields), '?'));
+
+    $sql = "INSERT INTO $tableName ($fieldNames) VALUES ($placeholders)";
+
+    $stmt = $databaseConnection->prepare($sql);
+    
+    if ($stmt) {
+        $types = '';  // Determine data types for binding parameters
+        foreach ($data as $value) {
+            if (is_int($value)) {
+                $types .= 'i';  // Integer
+            } elseif (is_double($value)) {
+                $types .= 'd';  // Double
+            } else {
+                $types .= 's';  // String
+            }
+        }
+
+        $stmt->bind_param($types, ...$data);
+        $stmt->execute();
+        $stmt->close();
+    }
+}
+
+?>
