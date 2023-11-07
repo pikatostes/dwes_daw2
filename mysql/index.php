@@ -31,70 +31,148 @@
         <form action="" method="post">
             <input type="submit" value="Consultar" name="consultar">
             <input type="submit" value="Insertar" name="insertar">
-            <input type="submit" value="Modificar">
-            <input type="submit" value="Eliminar">
+            <input type="submit" value="Modificar" name="modificar">
+            <input type="submit" value="Eliminar" name="eliminar">
         </form>
+
     <?php
-        if (isset($_POST["consultar"])) {
-            echo '<form action="" method="post">
-                    <input type="text" name="table" id="table">
-                    <input type="submit" value="Mostrar">
-                  </form>';
+        if (isset($_POST["consultar"]) || isset($_POST['insertar']) || isset($_POST['modificar'])) {
+            $databaseConnection = connectToDatabase();
+            $tables = getAllTables($databaseConnection);
+
+            echo '<form action="" method="post">';
+
+            if (isset($_POST["consultar"])) {
+                echo '<label for="table">Selecciona una tabla:</label>
+                    <select name="table" id="table">';
+                foreach ($tables as $table) {
+                    $selected = ($_POST["table"] == $table) ? 'selected' : '';
+                    echo '<option value="' . $table . '" ' . $selected . '>' . $table . '</option>';
+                }
+                echo '<input type="submit" value="Mostrar">';
+            }
+
+            if (isset($_POST['insertar'])) {
+                echo '<label for="tableIns">Nombre de la tabla:</label>
+                    <select name="tableIns" id="tableIns">';
+                foreach ($tables as $table) {
+                    echo '<option value="' . $table . '">' . $table . '</option>';
+                }
+                echo '<input type="submit" value="Mostrar">';
+            }
+
+            if (isset($_POST['modificar'])) {
+                echo '<label for="tableMod">Nombre de la tabla:</label>
+                    <select name="tableMod" id="tableMod">';
+                foreach ($tables as $table) {
+                    echo '<option value="' . $table . '">' . $table . '</option>';
+                }
+                echo '<input type="submit" value="Mostrar">';
+            }
+
+            echo '</form>';
         }
 
-        if (isset($_POST['insertar'])) {
-
-            echo '<form action="" method="post">
-                    <label for="tableIns">Nombre de la tabla:</label>
-                    <input type="text" name="tableIns" id="tableIns">
-                    <input type="submit" value="Mostrar">
-                </form>';
-
-           
-        }
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $tabla = isset($_POST["table"]) ? $_POST["table"] : null;
+            if (isset($_POST["table"])) {
+                $selectedTable = $_POST["table"];
 
-            if (!empty($tabla)) {
-                showTable($tabla);
-            } else {
-                echo "Debe proporcionar un nombre de tabla válido.";
-            }
-        }
-
-        if (isset($_POST["tableIns"])) {
-            $selectedTable = $_POST["tableIns"];
-            $fields = getTableStructure($selectedTable);
-
-            if (!empty($fields)) {
-                // Mostrar formulario de inserción si la tabla existe
-                echo "<h2>Insertar Datos en la tabla '$selectedTable'</h2>";
-                echo '<form action="" method="post">';
-                echo "<input type='hidden' name='selected_table' value='$selectedTable'>";
-
-                foreach ($fields as $field) {
-                    echo "<label for='$field'>$field:</label>";
-                    echo "<input type='text' name='data[$field]'><br>";
+                if (isset($_POST["modificar"])) {
+                } else {
+                    showTable($selectedTable);
                 }
 
-                echo '<input type="submit" value="Insertar Datos">';
-                echo '</form>';
-            } else {
-                echo "La tabla '$selectedTable' no existe.";
-            }
-        }
+                // Mantén el valor seleccionado en el select
+                echo '<form action="" method="post">
+                <label for="table">Selecciona una tabla:</label>
+                <select name="table" id="table">';
+                $databaseConnection = connectToDatabase();
+                $tables = getAllTables($databaseConnection);
 
+                foreach ($tables as $table) {
+                    $selected = ($_POST["table"] == $table) ? 'selected' : '';
+                    echo '<option value="' . $table . '" ' . $selected . '>' . $table . '</option>';
+                }
+
+                echo '</select>';
+
+                if (isset($_POST['insertar']) || isset($_POST['modificar'])) {
+                    echo '<input type="submit" value="Mostrar">';
+                }
+
+                echo '</form>';
+            } elseif (isset($_POST["tableIns"])) {
+                $selectedTable = $_POST["tableIns"];
+                $fields = getTableStructure($selectedTable);
+
+                if (!empty($fields)) {
+                    // Mostrar formulario de inserción con campos según la tabla seleccionada
+                    echo "<h2>Insertar Datos en la tabla '$selectedTable'</h2>";
+                    echo '<form action="" method="post">';
+                    echo "<input type='hidden' name='selected_table' value='$selectedTable'>";
+
+                    foreach ($fields as $field) {
+                        echo "<label for='$field'>$field:</label>";
+                        echo "<input type='text' name='data[$field]'><br>";
+                    }
+
+                    echo '<input type="submit" value="Insertar Datos">';
+                    echo '</form>';
+                } else {
+                    echo "La tabla '$selectedTable' no existe.";
+                }
+            } elseif (isset($_POST["tableMod"])) {
+                $selectedTable = $_POST["tableMod"];
+            
+                // Verificar si se hizo clic en el botón "Modificar" de una fila específica
+                if (isset($_POST['modify_row']) && isset($_POST['row_id']) && isset($_POST['tableMod'])) {
+                    $selectedTable = $_POST['tableMod'];
+                    $rowId = $_POST['row_id'];
+            
+                    // Llama a la función para mostrar el formulario de edición
+                    showEditForm($selectedTable, $rowId);
+            
+                    // Verificar si se envió el formulario de edición y procesarlo
+                    if (isset($_POST['save_changes'])) {
+                        $table = $_POST["table"];
+                        $rowId = $_POST["row_id"];
+                        $data = $_POST["data"];
+            
+                        $mysqli = connectToDatabase(); // Obtener la conexión a la base de datos
+            
+                        // Realizar la actualización de datos
+                        $updateResult = updateData($table, $rowId, $data, $mysqli);
+            
+                        if ($updateResult) {
+                            echo "Los datos han sido actualizados en la tabla '$table' exitosamente.";
+                        } else {
+                            echo "Error al actualizar datos en la tabla '$table'.";
+                        }
+            
+                        $mysqli->close(); // Cierra la conexión a la base de datos
+                    }
+                } else {
+                    // Mostrar la tabla con botones "Modificar" para cada fila
+                    showTableWithModifyButton($selectedTable);
+                }
+            }            
+            
+        }
         if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["selected_table"]) && isset($_POST["data"])) {
             $selectedTable = $_POST["selected_table"];
             $data = $_POST["data"];
 
-            // Realiza la conexión a la base de datos con MySQLi
-            $mysqli = new mysqli("localhost", "username", "password", "myDB");
+            $mysqli = connectToDatabase(); // Obtener la conexión a la base de datos
 
-            insertData($selectedTable, array_values($data), $mysqli);
+            // Realizar la inserción de datos
+            $insertResult = insertData($selectedTable, $data, $mysqli);
 
-            echo "Los datos han sido insertados en la tabla '$selectedTable' exitosamente.";
+            if ($insertResult) {
+                echo "Los datos han sido insertados en la tabla '$selectedTable' exitosamente.";
+            } else {
+                echo "Error al insertar datos en la tabla '$selectedTable'.";
+            }
 
             $mysqli->close(); // Cierra la conexión a la base de datos
         }
@@ -102,7 +180,6 @@
         header("Location: login.php");
     }
     ?>
-
 </body>
 
 </html>
