@@ -134,24 +134,27 @@
                     showEditForm($selectedTable, $rowId);
             
                     // Verificar si se envió el formulario de edición y procesarlo
-                    if (isset($_POST['save_changes'])) {
+                    if (isset($_POST["save_changes"])) {
                         $table = $_POST["table"];
                         $rowId = $_POST["row_id"];
                         $data = $_POST["data"];
-            
-                        $mysqli = connectToDatabase(); // Obtener la conexión a la base de datos
-            
-                        // Realizar la actualización de datos
-                        $updateResult = updateData($table, $rowId, $data, $mysqli);
-            
+                    
+                        echo "Se ha enviado el formulario de edición<br>";
+                        echo "Tabla: $table<br>";
+                        echo "Fila ID: $rowId<br>";
+                        var_dump($data); // Puedes usar var_dump para ver el contenido del array de datos
+                    
+                        // Llama a la función para actualizar los datos
+                        $updateResult = updateData($table, $rowId, $data, $databaseConnection);
+                    
                         if ($updateResult) {
-                            echo "Los datos han sido actualizados en la tabla '$table' exitosamente.";
+                            echo "Los datos se han actualizado exitosamente en la tabla '$table'.";
                         } else {
                             echo "Error al actualizar datos en la tabla '$table'.";
                         }
-            
-                        $mysqli->close(); // Cierra la conexión a la base de datos
-                    }
+                    
+                        $databaseConnection->close(); // Cierra la conexión a la base de datos
+                    }                    
                 } else {
                     // Mostrar la tabla con botones "Modificar" para cada fila
                     showTableWithModifyButton($selectedTable);
