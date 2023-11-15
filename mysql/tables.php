@@ -1,4 +1,5 @@
 <?php
+// funciona
 function connectToDatabase()
 {
     $servername = "localhost";
@@ -15,6 +16,7 @@ function connectToDatabase()
     return $databaseConnection;
 }
 
+// funciona
 function getAllTables($databaseConnection)
 {
     $tables = array();
@@ -32,6 +34,7 @@ function getAllTables($databaseConnection)
     return $tables;
 }
 
+// funciona
 function showTable($table)
 {
     $databaseConnection = connectToDatabase();
@@ -55,6 +58,7 @@ function showTable($table)
     $databaseConnection->close();
 }
 
+// funciona
 function displayTable($table, $databaseConnection)
 {
     $sql = "SELECT * FROM " . $table;
@@ -84,6 +88,7 @@ function displayTable($table, $databaseConnection)
     }
 }
 
+// funciona
 function getTableStructure($tableName)
 {
     $databaseConnection = connectToDatabase();
@@ -102,7 +107,7 @@ function getTableStructure($tableName)
     return $fields;
 }
 
-
+// funciona
 function insertData($tableName, $data, $mysqli)
 {
     // Verificar si la tabla existe antes de insertar datos
@@ -163,91 +168,12 @@ function insertData($tableName, $data, $mysqli)
         } else {
             return false; // Error en la inserción
         }
-
-        $stmt->close();
     }
-
+    $stmt->close();
     return false; // Error en la preparación de la consulta
 }
 
-function showEditForm($table, $rowId)
-{
-    $databaseConnection = connectToDatabase();
-
-    // Obtén los nombres de las columnas de la tabla
-    $columns = getTableStructure($table);
-
-    // Obtén el nombre de la columna "id" que suele ser la primera
-    $idColumnName = reset($columns);
-
-    // Construye la consulta SQL para obtener la fila con el ID seleccionado
-    $sql = "SELECT * FROM $table WHERE $idColumnName = ?";
-
-    $stmt = $databaseConnection->prepare($sql);
-    $stmt->bind_param("i", $rowId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-
-    if ($row) {
-        echo "<h2>Modificar Datos de la tabla '$table'</h2>";
-        echo '<form action="" method="post">';
-        echo "<input type='hidden' name='table' value='$table'>";
-        echo "<input type='hidden' name='row_id' value='$rowId'>";
-
-        foreach ($columns as $column) {
-            $columnName = $column;
-            $currentValue = $row[$columnName];
-            echo "<label for='$columnName'>$columnName:</label>";
-            echo "<input type='text' name='data[$columnName]' value='$currentValue'><br>";
-        }
-
-        echo '<input type="submit" value="Guardar Cambios" name="save_changes">';
-        echo '</form>';
-    } else {
-        echo "No se encontraron resultados para la fila seleccionada.";
-    }
-
-    $stmt->close();
-    $databaseConnection->close();
-}
-
-function updateData($table, $rowId, $data, $mysqli)
-    {
-        if (!empty($table) && !empty($rowId)) {
-            $setClause = '';
-            $params = array();
-
-            foreach ($data as $field => $value) {
-                $setClause .= "$field = ?, ";
-                $params[] = &$value;
-            }
-
-            $setClause = rtrim($setClause, ', ');
-
-            $sql = "UPDATE $table SET $setClause WHERE id = ?";
-            $params[] = $rowId;
-
-            $stmt = $mysqli->prepare($sql);
-
-            if ($stmt) {
-                $types = str_repeat('s', count($params) - 1) . 'i';
-                array_unshift($params, $types);
-                call_user_func_array(array($stmt, 'bind_param'), $params);
-
-                if ($stmt->execute()) {
-                    $stmt->close();
-                    return true;
-                } else {
-                    $stmt->close();
-                    return false;
-                }
-            }
-        }
-
-        return false;
-    }
-
+// funciona
 function showTableWithModifyButton($table)
 {
     $databaseConnection = connectToDatabase();
@@ -259,6 +185,8 @@ function showTableWithModifyButton($table)
 
     $sql = "SELECT * FROM $table";
     $result = $databaseConnection->query($sql);
+
+    $tableData = []; // Array para almacenar los datos de la tabla
 
     if ($result->num_rows > 0) {
         echo "<h2>Datos de la tabla '$table'</h2>";
@@ -278,6 +206,10 @@ function showTableWithModifyButton($table)
             foreach ($row as $column => $value) {
                 echo "<td>" . $value . "</td>";
             }
+
+            // Almacena los datos de la fila en el array
+            $tableData[] = $row;
+
             $row_id = $row[array_keys($row)[0]]; // Obtener el ID de la primera columna
 
             echo '<td>
@@ -290,9 +222,107 @@ function showTableWithModifyButton($table)
             echo "</tr>";
         }
         echo "</table>";
+
+        if (isset($_POST["modify_row"]) && isset($_POST["row_id"])) {
+            // Encuentra la fila correspondiente en $tableData
+            $selectedRow = null;
+            foreach ($tableData as $row) {
+                if ($row[array_keys($row)[0]] == $_POST["row_id"]) {
+                    $selectedRow = $row;
+                    break;
+                }
+            }
+
+            // Si se encontró la fila, utiliza sus valores como inputs
+            if ($selectedRow) {
+                echo '<h2>Formulario de Modificación de ' . ucfirst($table) . '</h2>
+                    <form action="" method="POST">';
+
+                foreach ($selectedRow as $column => $value) {
+                    echo '<label for="' . $column . '">' . ucfirst($column) . ':</label>
+                        <input type="text" id="' . $column . '" name="' . $column . '" value="' . $value . '" required>';
+                }
+
+                echo '<input type="submit" value="Actualizar datos" name="update_data">
+                    </form>';
+            } else {
+                echo "No se encontró la fila seleccionada.";
+            }
+        }
     } else {
         echo "No se encontraron resultados.";
     }
 
     $databaseConnection->close();
+
+    // Devuelve el array con los datos de la tabla
+    return $tableData;
+}
+
+// funciona
+function updateTableData($data, $tableName, $primaryKey)
+{
+    $databaseConnection = connectToDatabase();
+
+    // Verifica si la conexión a la base de datos fue exitosa
+    if ($databaseConnection) {
+        // Obtiene la estructura de la tabla
+        $fields = getTableStructure($tableName);
+
+        // Construye la parte SET de la consulta SQL
+        $setClause = '';
+        foreach ($data as $field => $value) {
+            if (in_array($field, $fields)) {
+                $setClause .= "$field = '$value', ";
+            }
+        }
+        $setClause = rtrim($setClause, ', ');
+
+        // Construye la consulta SQL de actualización
+        $sql = "UPDATE $tableName SET $setClause WHERE $primaryKey = '" . $data[$primaryKey] . "'";
+
+        // Ejecuta la consulta
+        if ($databaseConnection->query($sql) === TRUE) {
+            echo "Datos actualizados correctamente.";
+        } else {
+            echo "Error al actualizar datos: " . $databaseConnection->error;
+        }
+
+        // Cierra la conexión a la base de datos
+        $databaseConnection->close();
+    }
+}
+
+// funciona
+function postShow($databaseConnection, $tables)
+{
+    echo '<label for="table">Selecciona una tabla:</label>
+                    <select name="table" id="table">';
+    foreach ($tables as $table) {
+        $selected = ($_POST["table"] == $table) ? 'selected' : '';
+        echo '<option value="' . $table . '" ' . $selected . '>' . $table . '</option>';
+    }
+    echo '<input type="submit" value="Mostrar">';
+}
+
+//funciona
+function postIns($databaseConnection, $tables)
+{
+    echo '<label for="tableIns">Nombre de la tabla:</label>
+                    <select name="tableIns" id="tableIns">';
+    foreach ($tables as $table) {
+        echo '<option value="' . $table . '">' . $table . '</option>';
+    }
+    echo '<input type="submit" value="Mostrar">';
+}
+
+// funciona
+function postMod($databaseConnection, $tables)
+{
+    echo '<label for="tableMod">Nombre de la tabla:</label>
+                    <select name="tableMod" id="tableMod">';
+    foreach ($tables as $table) {
+        echo '<option value="' . $table . '">' . $table . '</option>';
+    }
+    echo '<input type="submit" value="Mostrar">';
 }
