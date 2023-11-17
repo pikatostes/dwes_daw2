@@ -460,3 +460,88 @@ function showTableWithDeleteButton($tableName, $databaseConnection)
         echo "La tabla está vacía.";
     }
 }
+
+function generateSelectOptions($field)
+{
+    // Conectarse a la base de datos
+    $databaseConnection = connectToDatabase();
+
+    // Obtener los códigos de la tabla "comerciales"
+    $tableName = "comerciales";
+    $fields = getTableStructure($tableName, $databaseConnection);
+
+    // Verificar si la tabla contiene un campo llamado "codigo"
+    if (in_array("codigo", $fields)) {
+        // Consultar los códigos de la tabla
+        $sql = "SELECT codigo FROM $tableName";
+        $result = $databaseConnection->query($sql);
+
+        // Verificar si se obtuvieron resultados
+        if ($result) {
+            // Crear el elemento <select>
+            echo "<select name='data[$field]'>";
+
+            // Iterar sobre los resultados y agregar opciones al select
+            while ($row = $result->fetch_assoc()) {
+                $codigo = $row["codigo"];
+                echo "<option value=\"$codigo\" name='data[$field]'>$codigo</option>";
+            }
+
+            // Cerrar el elemento <select>
+            echo '</select>';
+
+            // Liberar los resultados
+            $result->free();
+        } else {
+            echo "Error al ejecutar la consulta: " . $databaseConnection->error;
+        }
+    } else {
+        echo "La tabla \"$tableName\" no contiene un campo llamado \"codigo\"";
+    }
+
+    // Cerrar la conexión a la base de datos
+    $databaseConnection->close();
+}
+
+// Función para generar un select con las opciones de la tabla "productos"
+function generateProductSelect($field)
+{
+    // Conectarse a la base de datos
+    $databaseConnection = connectToDatabase();
+
+    // Obtener las referencias de la tabla "productos"
+    $tableName = "productos";
+    $fields = getTableStructure($tableName, $databaseConnection);
+
+    // Verificar si la tabla contiene un campo llamado "referencia"
+    if (in_array("referencia", $fields)) {
+        // Consultar las referencias de la tabla
+        $sql = "SELECT referencia FROM $tableName";
+        $result = $databaseConnection->query($sql);
+
+        // Verificar si se obtuvieron resultados
+        if ($result) {
+            // Crear el elemento <select>
+            echo "<select name='data[$field]'>";
+
+            // Iterar sobre los resultados y agregar opciones al select
+            while ($row = $result->fetch_assoc()) {
+                $referencia = $row["referencia"];
+                echo "<option value=\"$referencia\" name='data[$field]'>$referencia</option>";
+            }
+
+            // Cerrar el elemento <select>
+            echo '</select>';
+
+            // Liberar los resultados
+            $result->free();
+        } else {
+            echo "Error al ejecutar la consulta: " . $databaseConnection->error;
+        }
+    } else {
+        echo "La tabla \"$tableName\" no contiene un campo llamado \"referencia\"";
+    }
+
+    // Cerrar la conexión a la base de datos
+    $databaseConnection->close();
+}

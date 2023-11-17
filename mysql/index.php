@@ -67,8 +67,14 @@
             echo "<input type='hidden' name='selected_table' value='$selectedTable'>";
 
             foreach ($fields as $field) {
-                echo "<label for='$field'>$field:</label>";
-                echo "<input type='text' name='data[$field]'><br>";
+                if ($field === "codComercial") {
+                    echo "$field" . generateSelectOptions($field) . "<br>";
+                } elseif ($field === "refProducto") {
+                    echo "$field" . generateProductSelect($field) . "<br>";
+                } else {
+                    echo "<label for='$field'>$field:</label>";
+                    echo "<input type='text' name='data[$field]'><br>";
+                }
             }
 
             echo '<input type="submit" value="Insertar Datos">';
