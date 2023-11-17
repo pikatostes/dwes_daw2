@@ -35,63 +35,8 @@ function getAllTables($databaseConnection)
 }
 
 // funciona
-function showTable($table)
+function getTableStructure($tableName, $databaseConnection)
 {
-    $databaseConnection = connectToDatabase();
-
-    if (empty($table)) {
-        echo "Debe proporcionar el nombre de una tabla.";
-        return;
-    }
-
-    // Construye la consulta SQL directamente con el nombre de la tabla
-    $sql = "SHOW TABLES LIKE '$table'";
-
-    $result = $databaseConnection->query($sql);
-
-    if ($result->num_rows == 0) {
-        echo "La tabla '" . $table . "' no existe en la base de datos.";
-    } else {
-        displayTable($table, $databaseConnection);
-    }
-
-    $databaseConnection->close();
-}
-
-// funciona
-function displayTable($table, $databaseConnection)
-{
-    $sql = "SELECT * FROM " . $table;
-    $result = $databaseConnection->query($sql);
-
-    if ($result->num_rows > 0) {
-        echo "<table border='1'>";
-
-        $firstRow = $result->fetch_assoc();
-        echo "<tr>";
-        foreach ($firstRow as $column => $value) {
-            echo "<th>$column</th>";
-        }
-        echo "</tr>";
-
-        $result->data_seek(0);
-        while ($row = $result->fetch_assoc()) {
-            echo "<tr>";
-            foreach ($row as $value) {
-                echo "<td>" . $value . "</td>";
-            }
-            echo "</tr>";
-        }
-        echo "</table>";
-    } else {
-        echo "No se encontraron resultados.";
-    }
-}
-
-// funciona
-function getTableStructure($tableName)
-{
-    $databaseConnection = connectToDatabase();
     $fields = [];
 
     $sql = "DESCRIBE $tableName";
@@ -108,20 +53,20 @@ function getTableStructure($tableName)
 }
 
 // funciona
-function insertData($tableName, $data, $mysqli)
+function insertData($tableName, $data, $databaseConnection)
 {
     // Verificar si la tabla existe antes de insertar datos
-    if (!$mysqli || $mysqli->connect_error) {
-        die("Error de conexión a la base de datos: " . $mysqli->connect_error);
+    if (!$databaseConnection || $databaseConnection->connect_error) {
+        die("Error de conexión a la base de datos: " . $databaseConnection->connect_error);
     }
 
-    $fields = getTableStructure($tableName);
+    $fields = getTableStructure($tableName, $databaseConnection);
     $fieldNames = implode(', ', $fields);
     $placeholders = rtrim(str_repeat('?, ', count($fields)), ', '); // Crear los marcadores de posición
 
     $sql = "INSERT INTO $tableName ($fieldNames) VALUES ($placeholders)";
 
-    $stmt = $mysqli->prepare($sql);
+    $stmt = $databaseConnection->prepare($sql);
 
     if ($stmt) {
         $types = ''; // Determine data types for binding parameters
@@ -174,10 +119,8 @@ function insertData($tableName, $data, $mysqli)
 }
 
 // funciona
-function showTableWithModifyButton($table)
+function showTableWithModifyButton($table, $databaseConnection)
 {
-    $databaseConnection = connectToDatabase();
-
     if (empty($table)) {
         echo "Debe proporcionar el nombre de una tabla.";
         return;
@@ -253,21 +196,17 @@ function showTableWithModifyButton($table)
         echo "No se encontraron resultados.";
     }
 
-    $databaseConnection->close();
-
     // Devuelve el array con los datos de la tabla
     return $tableData;
 }
 
 // funciona
-function updateTableData($data, $tableName, $primaryKey)
+function updateTableData($data, $tableName, $primaryKey, $databaseConnection)
 {
-    $databaseConnection = connectToDatabase();
-
     // Verifica si la conexión a la base de datos fue exitosa
     if ($databaseConnection) {
         // Obtiene la estructura de la tabla
-        $fields = getTableStructure($tableName);
+        $fields = getTableStructure($tableName, $databaseConnection);
 
         // Construye la parte SET de la consulta SQL
         $setClause = '';
@@ -283,22 +222,19 @@ function updateTableData($data, $tableName, $primaryKey)
 
         // Ejecuta la consulta
         if ($databaseConnection->query($sql) === TRUE) {
-            echo "Datos actualizados correctamente.";
+            echo "<br>Datos actualizados correctamente.";
         } else {
             echo "Error al actualizar datos: " . $databaseConnection->error;
         }
 
         // Cierra la conexión a la base de datos
-        $databaseConnection->close();
     }
 }
 
-function filterByVendor() {
+// funciona
+function filterByVendor($databaseConnection)
+{
     echo '<label for="comercial">Selecciona un comercial:</label>';
-
-    // Conecta a la base de datos
-    $databaseConnection = connectToDatabase();
-
     // Obtén los nombres de los comerciales de la tabla comerciales
     $query = "SELECT nombre FROM comerciales";
     $result = $databaseConnection->query($query);
@@ -311,15 +247,14 @@ function filterByVendor() {
             . $row["nombre"] . '</option>';
     }
     echo '</select>';
-
     echo '<input type="submit" value="Mostrar" name="table">';  // Cambiado a "table"
 }
 
 // funciona
 function postShow($databaseConnection, $tables)
 {
-    echo '<label for="table">Selecciona una tabla:</label>
-                    <select name="table" id="table">';
+    echo '<label for="tableDel">Selecciona una tabla:</label>
+                    <select name="tableDel" id="tableDel">';
     foreach ($tables as $table) {
         $selected = ($_POST["table"] == $table) ? 'selected' : '';
         echo '<option value="' . $table . '" ' . $selected . '>' . $table . '</option>';
@@ -349,19 +284,16 @@ function postMod($databaseConnection, $tables)
     echo '<input type="submit" value="Mostrar">';
 }
 
-
-// pruebas
-function showDataForComercial($comercialId) {
-    // Conecta a la base de datos
-    $databaseConnection = connectToDatabase();
-
+// funciona
+function showDataForComercial($comercialId, $databaseConnection)
+{
     // Obtén los datos de las tablas productos y ventas para el vendedor seleccionado
     $query = "SELECT p.referencia, p.nombre AS nombre_producto, p.descripcion, p.precio, p.descuento,
                      v.refProducto, v.cantidad, v.fecha
               FROM productos p
               JOIN ventas v ON p.referencia = v.refProducto
               WHERE v.codComercial = (SELECT codigo FROM comerciales WHERE nombre = '$comercialId')";
-    
+
     $result = $databaseConnection->query($query);
 
     // Muestra los datos en una tabla
@@ -391,3 +323,140 @@ function showDataForComercial($comercialId) {
     echo '</table>';
 }
 
+// en pruebas
+// Función para eliminar un comercial y sus ventas asociadas
+function deleteComercial($codigo, $databaseConnection)
+{
+    // Eliminar ventas asociadas al comercial
+    $sqlVentas = "DELETE FROM Ventas WHERE codComercial = ?";
+    $stmtVentas = $databaseConnection->prepare($sqlVentas);
+    $stmtVentas->bind_param("s", $codigo);
+    $stmtVentas->execute();
+    $stmtVentas->close();
+
+    // Eliminar el comercial
+    $sqlComercial = "DELETE FROM Comerciales WHERE codigo = ?";
+    $stmtComercial = $databaseConnection->prepare($sqlComercial);
+    $stmtComercial->bind_param("s", $codigo);
+    $stmtComercial->execute();
+    $stmtComercial->close();
+}
+
+// Función para eliminar un producto y sus ventas asociadas
+function deleteProducto($referencia, $databaseConnection)
+{
+    // Eliminar ventas asociadas al producto
+    $sqlVentas = "DELETE FROM Ventas WHERE refProducto = ?";
+    $stmtVentas = $databaseConnection->prepare($sqlVentas);
+    $stmtVentas->bind_param("s", $referencia);
+    $stmtVentas->execute();
+    $stmtVentas->close();
+
+    // Eliminar el producto
+    $sqlProducto = "DELETE FROM Productos WHERE referencia = ?";
+    $stmtProducto = $databaseConnection->prepare($sqlProducto);
+    $stmtProducto->bind_param("s", $referencia);
+    $stmtProducto->execute();
+    $stmtProducto->close();
+}
+
+// Función para eliminar una venta específica
+function deleteVenta($codComercial, $refProducto, $fecha, $databaseConnection)
+{
+    // Eliminar la venta específica
+    $sqlVenta = "DELETE FROM Ventas WHERE codComercial = ? AND refProducto = ? AND fecha = ?";
+    $stmtVenta = $databaseConnection->prepare($sqlVenta);
+    $stmtVenta->bind_param("sss", $codComercial, $refProducto, $fecha);
+    $stmtVenta->execute();
+    $stmtVenta->close();
+}
+
+// Función para obtener la clave primaria de una tabla
+function getPrimaryKey($tableName, $databaseConnection)
+{
+    $fields = getTableStructure($tableName, $databaseConnection);
+    $primaryKey = [];
+
+    foreach ($fields as $field) {
+        $sql = "SHOW COLUMNS FROM $tableName LIKE '$field'";
+        $result = $databaseConnection->query($sql);
+
+        if ($result && $result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            if ($row['Key'] == 'PRI') {
+                $primaryKey[] = $field;
+            }
+        }
+    }
+
+    return $primaryKey;
+}
+
+// Función para eliminar una fila de una tabla
+function deleteRow($tableName, $primaryKey, $rowValue, $databaseConnection)
+{
+    $sql = "DELETE FROM $tableName WHERE $primaryKey = ?";
+    $stmt = $databaseConnection->prepare($sql);
+
+    if ($stmt) {
+        $stmt->bind_param("s", $rowValue);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            return true;
+        } else {
+            $stmt->close();
+            return false;
+        }
+    }
+
+    return false;
+}
+
+function showTableWithDeleteButton($tableName, $databaseConnection)
+{
+    echo "<h2>Tabla: $tableName</h2>";
+
+    // Obtener datos de la tabla
+    $sql = "SELECT * FROM $tableName";
+    $result = $databaseConnection->query($sql);
+
+    if ($result && $result->num_rows > 0) {
+        echo '<table border="1"><tr>';
+
+        // Mostrar encabezados de columna
+        while ($fieldInfo = $result->fetch_field()) {
+            echo "<th>{$fieldInfo->name}</th>";
+        }
+
+        echo "<th>Acción</th></tr>";
+
+        // Mostrar datos de la tabla con formulario y botón de eliminar para cada fila
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr>";
+
+            foreach ($row as $value) {
+                echo "<td>$value</td>";
+            }
+
+            echo "<td>";
+            echo '<form action="" method="post">';
+            echo "<input type='hidden' name='tableWithDelete' value='$tableName'>";
+
+            // Agregar campos ocultos para la clave primaria
+            foreach ($row as $column => $value) {
+                echo "<input type='hidden' name='{$column}_delete' value='$value'>";
+            }
+
+            echo '<input type="submit" value="Eliminar Fila" name="delete_row">';
+            echo '</form>';
+            echo "</td>";
+
+            echo "</tr>";
+        }
+
+        echo "</table>";
+    } else {
+        echo "La tabla está vacía.";
+    }
+}
