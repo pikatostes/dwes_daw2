@@ -293,6 +293,28 @@ function updateTableData($data, $tableName, $primaryKey)
     }
 }
 
+function filterByVendor() {
+    echo '<label for="comercial">Selecciona un comercial:</label>';
+
+    // Conecta a la base de datos
+    $databaseConnection = connectToDatabase();
+
+    // Obtén los nombres de los comerciales de la tabla comerciales
+    $query = "SELECT nombre FROM comerciales";
+    $result = $databaseConnection->query($query);
+
+    // Muestra el select con los nombres de los comerciales
+    echo '<select name="comercial" id="comercial">';
+    while ($row = $result->fetch_assoc()) {
+        $selected = ($_POST["comercial"] == $row["nombre"]) ? 'selected' : '';
+        echo '<option value="' . $row["nombre"] . '" ' . $selected . '>'
+            . $row["nombre"] . '</option>';
+    }
+    echo '</select>';
+
+    echo '<input type="submit" value="Mostrar" name="table">';  // Cambiado a "table"
+}
+
 // funciona
 function postShow($databaseConnection, $tables)
 {
@@ -326,3 +348,46 @@ function postMod($databaseConnection, $tables)
     }
     echo '<input type="submit" value="Mostrar">';
 }
+
+
+// pruebas
+function showDataForComercial($comercialId) {
+    // Conecta a la base de datos
+    $databaseConnection = connectToDatabase();
+
+    // Obtén los datos de las tablas productos y ventas para el vendedor seleccionado
+    $query = "SELECT p.referencia, p.nombre AS nombre_producto, p.descripcion, p.precio, p.descuento,
+                     v.refProducto, v.cantidad, v.fecha
+              FROM productos p
+              JOIN ventas v ON p.referencia = v.refProducto
+              WHERE v.codComercial = (SELECT codigo FROM comerciales WHERE nombre = '$comercialId')";
+    
+    $result = $databaseConnection->query($query);
+
+    // Muestra los datos en una tabla
+    echo '<table border="1">
+            <tr>
+                <th>Referencia Producto</th>
+                <th>Nombre Producto</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Descuento</th>
+                <th>Cantidad Vendida</th>
+                <th>Fecha Venta</th>
+            </tr>';
+
+    while ($row = $result->fetch_assoc()) {
+        echo '<tr>
+                <td>' . $row["referencia"] . '</td>
+                <td>' . $row["nombre_producto"] . '</td>
+                <td>' . $row["descripcion"] . '</td>
+                <td>' . $row["precio"] . '</td>
+                <td>' . $row["descuento"] . '</td>
+                <td>' . $row["cantidad"] . '</td>
+                <td>' . $row["fecha"] . '</td>
+              </tr>';
+    }
+
+    echo '</table>';
+}
+
