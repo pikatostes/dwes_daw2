@@ -10,12 +10,15 @@ $hora_conexion = date('H:i:s', $_SESSION['hora_conexion']);
 // Procesar la solicitud de cambio de color si se ha enviado el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["color"])) {
     $color = $_POST["color"];
-    
+
     // Establecer la cookie con el nuevo color
     setcookie('chosenColor', $color, time() + 3600, '/'); // Caduca en una hora
-    
+
     // Actualizar la variable $chosenColor para reflejar el cambio inmediato
     $chosenColor = $color;
+} elseif (isset($_POST['restablecer'])) {
+    setcookie('chosenColor', 'white', time() - 3600, '/'); // Establecer en un tiempo pasado para eliminar
+    $chosenColor = 'white';
 } else {
     // Obtener el color elegido
     $chosenColor = isset($_COOKIE['chosenColor']) ? $_COOKIE['chosenColor'] : 'white';
