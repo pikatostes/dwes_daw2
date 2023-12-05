@@ -29,6 +29,11 @@ if (isset($_POST["modificar_usuario"])) {
     $usuarios->modificarUsuario($usuarioId, $nuevosDatos);
 }
 
+if (isset($_POST["delete"])) {
+    $usuarioId = $_POST["usuario_id"];
+    $usuarios->eliminarUsuario($usuarioId);
+}
+
 // Lógica para mostrar la tabla de usuarios
 $listaUsuarios = $usuarios->obtenerTodosLosUsuarios();
 ?>
@@ -73,14 +78,18 @@ $listaUsuarios = $usuarios->obtenerTodosLosUsuarios();
             <h2>Lista de Usuarios</h2>
             <table border="1">
                 <tr>
+                    <th>ID</th>
                     <th>Usuario</th>
+                    <th>Password</th>
                     <th>Email</th>
                     <th>Acciones</th>
                 </tr>';
 
         foreach ($listaUsuarios as $usuario) {
             echo "<tr>
+                    <td>{$usuario['id']}</td>
                     <td>{$usuario['usuario']}</td>
+                    <td>{$usuario['pwd']}</td>
                     <td>{$usuario['email']}</td>
                     <td>
                         <form action='' method='post'>
@@ -93,7 +102,33 @@ $listaUsuarios = $usuarios->obtenerTodosLosUsuarios();
 
         echo '</table>';
     } elseif (isset($_POST["del"])) {
-        # Código para la eliminación de usuario
+        // Mostrar la tabla de usuarios con botón de Eliminar
+        echo '
+            <h2>Lista de Usuarios</h2>
+            <table border="1">
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Password</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>';
+
+        foreach ($listaUsuarios as $usuario) {
+            echo "<tr>
+                    <td>{$usuario['id']}</td>
+                    <td>{$usuario['usuario']}</td>
+                    <td>{$usuario['pwd']}</td>
+                    <td>{$usuario['email']}</td>
+                    <td>
+                        <form action='' method='post'>
+                            <input type='hidden' name='usuario_id' value='{$usuario['id']}'>
+                            <button type='submit' name='delete'>Eliminar</button>
+                        </form>
+                    </td>
+                </tr>";
+        }
+        
     }
 
     if (isset($_POST['alta'])) {
