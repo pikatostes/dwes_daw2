@@ -101,7 +101,19 @@
                 <h2><?php echo $option === 'insert' ? 'Insert Item' : 'Modify Item'; ?></h2>
                 <form action="index.php?option=<?php echo $option; ?>" method="post">
                     <label for="name">Name:</label>
-                    <input type="text" name="name" required><br>
+                    <?php
+                    if ($option === "insert") {
+                        echo '<input type="text" name="name" required><br>';
+                    } else {
+                    ?>
+                        <select name="index">
+                            <?php foreach ($shoppingList as $index => $item) : ?>
+                                <option value="<?php echo $index; ?>"><?php echo $item["name"]; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php
+                    }
+                    ?>
 
                     <label for="quantity">Quantity:</label>
                     <input type="number" name="quantity" required><br>
@@ -111,8 +123,12 @@
 
                     <input type="hidden" name="index" value="<?php echo $option === 'modify' ? $index : -1; ?>">
                     <input type="submit" value="<?php echo $option === 'insert' ? 'Add to List' : 'Modify Item'; ?>">
+                    <?php
+                    var_dump($option);
+                    ?>
                 </form>
             <?php endif; ?>
+
 
             <?php if ($option === 'delete') : ?>
                 <h2>Delete Item</h2>
