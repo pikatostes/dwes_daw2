@@ -1,5 +1,4 @@
 <?php
-
 // src/Controller/GreetingController.php
 
 namespace App\Controller;
@@ -7,20 +6,17 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class GreetingController
+class GreetingController extends AbstractController
 {
     #[Route('/', name: 'homepage')]
     public function index(Request $request): Response
     {
-        $greet = "";
+        $name = $request->query->get("greet", "invitado");
 
-        if ($name = $request->query->get("greet")) {
-            $greet = sprintf('<h1>Hello %s!</h1>', htmlspecialchars($name));
-        } else {
-            $greet = '<h1>Muy buenas invitado</h1>';
-        }
-
-        return new Response($greet);
+        return $this->render('greeting/index.html.twig', [
+            'nombre' => $name,
+        ]);
     }
 }
