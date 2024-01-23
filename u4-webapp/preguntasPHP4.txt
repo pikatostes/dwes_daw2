@@ -1,0 +1,15 @@
+::U4::
+In the context of PHP session management, what is the primary purpose of the session.gc_maxlifetime directive in PHP configuration?{
+~%-25%Limit the maximum number of sessions per user.
+=Set the maximum duration of inactivity for a session before it is cleared
+~%-25%Define the default lifetime of session cookies.
+~%-25%Configure the maximum amount of data a session can store.
+}
+
+::U4::
+When implementing user authentication in PHP, what is the main difference between storing passwords as plain text and using the password_hash() function?{
+~%-25%There is no difference; both methods are equally secure.
+=password_hash() provides an additional layer of security by securely storing passwords using a hash
+~%-25%Storing passwords as plain text is more efficient in terms of performance.
+~%-25%The password_hash() function can only be used in development environments, not in production.
+}

@@ -1,0 +1,23 @@
+::U3::
+What is the main purpose of the "mysqli_fetch_assoc" function in PHP?{
+= Retrieve a row of results as an associative array.
+~%-25%Close a database connection.
+~%-25%Improve query performance.
+~%-25%Establish a new connection to the database.
+}
+
+::U3::
+In the context of PHP and database transactions, what is the function of "mysqli_commit"?{
+~%-25%Unbind a transaction from the database.
+= Confirm all operations performed within a transaction, permanently applying the changes to the database.
+~%-25%Suspend the transaction temporarily to allow other operations before confirming the changes.
+~%-25%Not related to transaction operations in PHP.
+}
+
+::U3::
+When using PHP and MySQLi, what function is commonly used to execute SQL queries and obtain the result set?{
+= mysqli_query
+~%-25% mysqli_close
+~%-25% mysqli_commit
+~%-25% mysqli_fetch_assoc
+}
