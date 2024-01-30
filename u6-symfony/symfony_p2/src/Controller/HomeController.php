@@ -1,24 +1,30 @@
 <?php
+// src/Controller/HomeController.php
 
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Producto; // Asegúrate de importar la entidad Producto
+use Doctrine\ORM\EntityManagerInterface;
 
 class HomeController extends AbstractController
 {
-    #[Route('/home')]
-    public function index(): Response
+    #[Route('/', name: 'home')]
+    public function index(EntityManagerInterface $entityManager): Response
     {
-        return new Response(
-            <<<EOF
-                <html>
-                    <body>
-                        <h1>Hola</h1>
-                    </body>
-                </html>
-            EOF
-        );
+        // Obtener la lista de productos desde la base de datos
+        $productos = $entityManager->getRepository(Producto::class)->findAll();
+
+        return $this->render('producto/lista.html.twig', [
+            'productos' => $productos,
+        ]);
     }
+
+    // #[Route("/{any}")]
+    // public function noEncontrada(): Response
+    // {
+    //     return $this->render('error/notFound.html.twig');
+    // }
 }

@@ -20,7 +20,7 @@ class Producto
     private ?string $descripcion = null;
 
     #[ORM\Column(length: 4)]
-    private ?string $code = null;
+    private ?int $code = null;
 
     #[ORM\Column]
     private ?int $stock = null;
@@ -66,7 +66,7 @@ class Producto
         return $this->code;
     }
 
-    public function setCode(string $code): static
+    public function setCode(int $code): static
     {
         $this->code = $code;
 

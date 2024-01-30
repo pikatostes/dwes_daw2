@@ -1,0 +1,31 @@
+{# templates/producto/crear.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <h1>Crear producto</h1>
+
+    {{ form_start(form, {'attr': {'class': 'formulario'}}) }}
+        <div class="form-group">
+            {{ form_label(form.nombre, 'Nombre', {'label_attr': {'class': 'form-control-label'}}) }}
+            {{ form_widget(form.nombre, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.descripcion, 'Descripción', {'label_attr': {'class': 'form-control-label'}}) }}
+            {{ form_widget(form.descripcion, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.code, 'Código', {'label_attr': {'class': 'form-control-label'}}) }}
+            {{ form_widget(form.code, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.stock, 'Stock', {'label_attr': {'class': 'form-control-label'}}) }}
+            {{ form_widget(form.stock, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    {{ form_end(form) }}
+{% endblock %}
