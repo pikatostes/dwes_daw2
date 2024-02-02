@@ -16,3 +16,6 @@ body {
 }
 
 /* Agrega más estilos según tus necesidades */
+a {
+    text-decoration: none;
+}
