@@ -3,7 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Songs;
+use Doctrine\DBAL\Types\TextType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,8 +16,8 @@ class SongsType extends AbstractType
         $builder
             ->add('title')
             ->add('author')
-            ->add('cover')
-            ->add('audio')
+            ->add('cover', FileType::class)
+            ->add('audio', FileType::class)
         ;
     }
 
