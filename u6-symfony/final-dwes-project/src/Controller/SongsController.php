@@ -30,6 +30,27 @@ class SongsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $file = $form->get('cover')->getData();
+            if ($file !== null) {
+                // Generar un nombre único para el archivo
+                $fileName = uniqid() . '.' . $file->guessExtension();
+                // Almacenar el archivo en una ubicación segura
+                $file->move($this->getParameter('images_directory'), $fileName);
+                // Guardar el nombre del archivo en la propiedad del usuario
+                $song->setCover($fileName);
+            }
+
+            $file = $form->get('audio')->getData();
+            if ($file !== null) {
+                // Generar un nombre único para el archivo
+                $fileName = uniqid() . '.mp3';
+                // Almacenar el archivo en una ubicación segura
+                $file->move($this->getParameter('music_directory'), $fileName);
+                // Guardar el nombre del archivo en la propiedad del usuario
+                $song->setAudio($fileName);
+            }
+
             $entityManager->persist($song);
             $entityManager->flush();
 
@@ -71,7 +92,7 @@ class SongsController extends AbstractController
     #[Route('/{id}', name: 'app_songs_delete', methods: ['POST'])]
     public function delete(Request $request, Songs $song, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$song->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $song->getId(), $request->request->get('_token'))) {
             $entityManager->remove($song);
             $entityManager->flush();
         }
