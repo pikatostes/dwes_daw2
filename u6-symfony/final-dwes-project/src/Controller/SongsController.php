@@ -78,6 +78,26 @@ class SongsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $file = $form->get('cover')->getData();
+            if ($file !== null) {
+                // Generar un nombre único para el archivo
+                $fileName = uniqid() . '.' . $file->guessExtension();
+                // Almacenar el archivo en una ubicación segura
+                $file->move($this->getParameter('images_directory'), $fileName);
+                // Guardar el nombre del archivo en la propiedad del usuario
+                $song->setCover($fileName);
+            }
+
+            $file = $form->get('audio')->getData();
+            if ($file !== null) {
+                // Generar un nombre único para el archivo
+                $fileName = uniqid() . '.mp3';
+                // Almacenar el archivo en una ubicación segura
+                $file->move($this->getParameter('music_directory'), $fileName);
+                // Guardar el nombre del archivo en la propiedad del usuario
+                $song->setAudio($fileName);
+            }
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_songs_index', [], Response::HTTP_SEE_OTHER);

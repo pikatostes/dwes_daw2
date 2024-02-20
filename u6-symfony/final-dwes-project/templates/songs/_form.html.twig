@@ -1,4 +1,37 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'form'}}) }}
+<div class="container">
+	<div class="mb-3 row justify-content-center">
+		<div class="col-md-6">
+			{{ form_label(form.title, 'Title', {'label_attr': {'class': 'form-label'}}) }}
+			{{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+		</div>
+	</div>
+
+	<div class="mb-3 row justify-content-center">
+		<div class="col-md-6">
+			{{ form_label(form.author, 'Author', {'label_attr': {'class': 'form-label'}}) }}
+			{{ form_widget(form.author, {'attr': {'class': 'form-control'}}) }}
+		</div>
+	</div>
+
+	<div class="mb-3 row justify-content-center">
+		<div class="col-md-6">
+			{{ form_label(form.cover, 'Cover Image', {'label_attr': {'class': 'form-label'}}) }}
+			{{ form_widget(form.cover, {'attr': {'class': 'form-control'}}) }}
+		</div>
+	</div>
+
+	<div class="mb-3 row justify-content-center">
+		<div class="col-md-6">
+			{{ form_label(form.audio, 'Audio File', {'label_attr': {'class': 'form-label'}}) }}
+			{{ form_widget(form.audio, {'attr': {'class': 'form-control'}}) }}
+		</div>
+	</div>
+
+	<div class="mb-3 row justify-content-center">
+		<div class="col-md-6 d-flex justify-content-center">
+			<button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
+		</div>
+	</div>
+</div>
 {{ form_end(form) }}

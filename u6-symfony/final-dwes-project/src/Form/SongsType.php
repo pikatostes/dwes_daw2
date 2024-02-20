@@ -8,6 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use App\Form\DataTransformer\FileToSymfonyFileTransformer;
 
 class SongsType extends AbstractType
 {
@@ -17,8 +18,11 @@ class SongsType extends AbstractType
             ->add('title')
             ->add('author')
             ->add('cover', FileType::class)
-            ->add('audio', FileType::class)
-        ;
+            ->add('audio', FileType::class);
+
+        // Add the data transformer to the form
+        $builder->get('cover')->addModelTransformer(new FileToSymfonyFileTransformer());
+        $builder->get('audio')->addModelTransformer(new FileToSymfonyFileTransformer());
     }
 
     public function configureOptions(OptionsResolver $resolver): void
