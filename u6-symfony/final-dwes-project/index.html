@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de Canciones</title>
+</head>
+<body>
+
+<audio id="myAudio" src="public/uploads/music/65d31da777529.mp3"></audio>
+
+<button onclick="togglePlayPause()" id="playPauseBtn">Reproducir</button>
+
+<script>
+    let audio = document.getElementById("myAudio");
+    let playPauseBtn = document.getElementById("playPauseBtn");
+
+    function togglePlayPause() {
+        if (audio.paused) {
+            audio.play();
+            playPauseBtn.innerHTML = "Pausar";
+        } else {
+            audio.pause();
+            playPauseBtn.innerHTML = "Reproducir";
+        }
+    }
+
+    // Agregar un evento para cambiar el texto del botón cuando la canción se completa
+    audio.addEventListener('ended', function() {
+        playPauseBtn.innerHTML = "Reproducir";
+    });
+</script>
+
+</body>
+</html>
