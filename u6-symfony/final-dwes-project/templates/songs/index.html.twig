@@ -41,49 +41,53 @@ let player = document.getElementById("audioPlayer");
 let iconElement;
 let currentAudioSource = "";
 
-function togglePlay(audioSource, iconId) { // Si la nueva fuente es igual a la fuente actual, cambiar la reproducción
-if (currentAudioSource === audioSource) {
-if (player.paused) {
-player.play();
-} else {
-player.pause();
-}
-} else { // Cambiar la fuente del reproductor de audio
-player.src = audioSource;
+function togglePlay(audioSource, iconId) {
+    // Si la nueva fuente es igual a la fuente actual, cambiar la reproducción
+    if (currentAudioSource === audioSource) {
+        if (player.paused) {
+            player.play();
+        } else {
+            player.pause();
+        }
+    } else {
+        // Cambiar la fuente del reproductor de audio
+        player.src = audioSource;
 
-// Pausar la reproducción si se hizo clic en otro botón
-player.pause();
+        // Pausar la reproducción si se hizo clic en otro botón
+        player.pause();
 
-// Obtener el elemento de la imagen (icono)
-iconElement = document.getElementById(iconId);
+        // Obtener el elemento de la imagen (icono)
+        iconElement = document.getElementById(iconId);
 
-// Restablecer la imagen de los botones anteriores
-resetIcons();
+        // Restablecer la imagen de los botones anteriores
+        resetIcons();
 
-// Actualizar la imagen y reproducir la canción
-toggleIcon('../uploads/images/pause.png');
-player.play();
-}
+        // Actualizar la imagen y reproducir la canción
+        toggleIcon("../uploads/images/pause.png");
+        player.play();
+    }
 
-// Almacenar la nueva fuente como la fuente actual
-currentAudioSource = audioSource;
+    // Almacenar la nueva fuente como la fuente actual
+    currentAudioSource = audioSource;
 }
 
 // Función para cambiar la imagen de reproducir/pausar
-function toggleIcon(newImagePath) { // Verificar si el iconElement está definido
-if (iconElement) {
-iconElement.src = newImagePath;
-}
+function toggleIcon(newImagePath) {
+    // Verificar si el iconElement está definido
+    if (iconElement) {
+        iconElement.src = newImagePath;
+    }
 }
 
 // Función para restablecer la imagen de los botones anteriores
-function resetIcons() { // Obtener todos los elementos de imagen con ID que comienza con "iconPlay_"
-let allIcons = document.querySelectorAll('[id^="iconPlay_"]');
+function resetIcons() {
+    // Obtener todos los elementos de imagen con ID que comienza con "iconPlay_"
+    let allIcons = document.querySelectorAll('[id^="iconPlay_"]');
 
-// Iterar sobre todos los elementos y restablecer la imagen a "play.png"
-allIcons.forEach(function (icon) {
-icon.src = '../uploads/images/play.png';
-});
+    // Iterar sobre todos los elementos y restablecer la imagen a "play.png"
+    allIcons.forEach(function (icon) {
+        icon.src = "../uploads/images/play.png";
+    });
 }
 	</script>
 {% endblock %}
