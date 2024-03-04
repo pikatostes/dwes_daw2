@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Playlists{% endblock %}
+
+{% block body %}
+    <h1>Playlists</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ playlist.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ playlist.Title }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_playlists_index') }}">back to list</a>
+
+    <a href="{{ path('app_playlists_edit', {'id': playlist.id}) }}">edit</a>
+
+    {{ include('playlists/_delete_form.html.twig') }}
+{% endblock %}

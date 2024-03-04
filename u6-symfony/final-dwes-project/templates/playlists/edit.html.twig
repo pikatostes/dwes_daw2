@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Playlists{% endblock %}
+
+{% block body %}
+    <h1>Edit Playlists</h1>
+
+    {{ include('playlists/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_playlists_index') }}">back to list</a>
+
+    {{ include('playlists/_delete_form.html.twig') }}
+{% endblock %}

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Playlists;
 use App\Entity\Songs;
 use App\Entity\Users;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -16,12 +17,16 @@ class DashboardController extends AbstractDashboardController
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
+        if ($this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->render('security/login.html.twig', ['last_username' => 'admin']);
+        }
+
         // return parent::index();
 
         // Option 1. You can make your dashboard redirect to some common page of your backend
         //
         $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
-        return $this->redirect($adminUrlGenerator->setController(AdminCrudController::class)->generateUrl());
+        return $this->redirect($adminUrlGenerator->setController(UsersCrudController::class)->generateUrl());
 
         // Option 2. You can make your dashboard redirect to different pages depending on the user
         //
@@ -44,8 +49,9 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+        yield MenuItem::linkToCrud('Users', 'fas fa-user', Users::class);
+        yield MenuItem::linkToCrud('Songs', 'fas fa-music', Songs::class);
+        yield MenuItem::linkToCrud('Playlists', 'fas fa-music', Playlists::class);
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
-        yield MenuItem::linkToCrud('Users', 'fas fa-list', Users::class);
-        yield MenuItem::linkToCrud('Songs', 'fas fa-list', Songs::class);
     }
 }

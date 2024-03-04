@@ -2,17 +2,17 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Admin;
+use App\Entity\Playlists;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-class Admin2CrudController extends AbstractCrudController
+class PlaylistsCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
-        return Admin::class;
+        return Playlists::class;
     }
 
     /*
