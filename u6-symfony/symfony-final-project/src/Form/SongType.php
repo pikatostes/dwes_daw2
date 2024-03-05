@@ -3,12 +3,12 @@
 namespace App\Form;
 
 use App\Entity\Song;
+use App\Form\DataTransformer\StringToFile;
 use Doctrine\DBAL\Types\TextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\Form\DataTransformer\FileToSymfonyFileTransformer;
 
 class SongType extends AbstractType
 {
@@ -21,8 +21,8 @@ class SongType extends AbstractType
             ->add('audio', FileType::class);
 
         // Add the data transformer to the form
-        $builder->get('cover')->addModelTransformer(new FileToSymfonyFileTransformer());
-        $builder->get('audio')->addModelTransformer(new FileToSymfonyFileTransformer());
+        $builder->get('cover')->addModelTransformer(new StringToFile());
+        $builder->get('audio')->addModelTransformer(new StringToFile());
     }
 
     public function configureOptions(OptionsResolver $resolver): void

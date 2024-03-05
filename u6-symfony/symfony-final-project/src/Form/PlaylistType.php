@@ -23,6 +23,7 @@ class PlaylistType extends AbstractType
                 'class' => Song::class,
                 'choice_label' => 'title',
                 'multiple' => true,
+                'expanded' => true, // Esta opción convierte el campo en un conjunto de checkboxes
             ])
         ;
     }

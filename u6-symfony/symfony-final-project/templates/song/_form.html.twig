@@ -1,4 +1,34 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+<div class="card-body">
+	<div class="mb-3 row">
+		<div class="col-md-6">
+			{{ form_row(form.title, {'attr': {'class': 'form-control', 'placeholder': 'Title'}}) }}
+		</div>
+	</div>
+
+	<div class="mb-3 row">
+		<div class="col-md-6">
+			{{ form_row(form.author, {'attr': {'class': 'form-control', 'placeholder': 'Author'}}) }}
+		</div>
+	</div>
+
+	<div class="mb-3 row">
+		<div class="col-md-6">
+			{{ form_row(form.cover, {'attr': {'class': 'form-control', 'placeholder': 'Cover Image'}}) }}
+		</div>
+	</div>
+
+	<div class="mb-3 row">
+		<div class="col-md-6">
+			{{ form_row(form.audio, {'attr': {'class': 'form-control', 'placeholder': 'Audio File'}}) }}
+		</div>
+	</div>
+
+	<div class="mb-3 row">
+		<div class="col-md-6">
+			<button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
+		</div>
+	</div>
+</div>
+
 {{ form_end(form) }}

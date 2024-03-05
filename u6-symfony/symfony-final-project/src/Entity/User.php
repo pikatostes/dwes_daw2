@@ -41,6 +41,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->playlists = new ArrayCollection();
+        // Establecer el rol 'ROLE_USER' automáticamente al crear un nuevo usuario
+        $this->roles[] = 'ROLE_USER';
+
+        // Asignar el rol 'ROLE_ADMIN' al usuario 'admin'
+        if ($this->username === 'admin' && $this->password === 'admin') {
+            $this->roles[] = 'ROLE_ADMIN';
+        }
     }
 
     public function getId(): ?int

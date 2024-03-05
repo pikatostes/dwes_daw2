@@ -3,9 +3,16 @@
 {% block title %}New Playlist{% endblock %}
 
 {% block body %}
-    <h1>Create new Playlist</h1>
+    <div class="container mt-4">
+        <h1 class="display-4">Create a New Playlist</h1>
 
-    {{ include('playlist/_form.html.twig') }}
+        <div class="card mt-4">
+            <div class="card-body">
+                {{ include('playlist/_form.html.twig') }}
+            </div>
+        </div>
 
-    <a href="{{ path('app_playlist_index') }}">back to list</a>
+        <a href="{{ path('app_playlist_index') }}" class="btn btn-secondary mt-3">Back to List</a>
+    </div>
 {% endblock %}
+

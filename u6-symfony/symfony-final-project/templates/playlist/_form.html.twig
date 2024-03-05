@@ -6,10 +6,19 @@
 </div>
 
 <div class="mb-3">
-    <label for="{{ form.songs_id.vars.id }}">Select Songs:</label>
-    {{ form_widget(form.songs_id, {'attr': {'multiple': 'multiple'}}) }}
+    <label class="form-label">Select Songs:</label>
+    
+    <div class="row">
+        {% for song in form.songs_id %}
+            <div class="col-md-3"> {# Utiliza col-md-3 para organizar en columnas de 4 en dispositivos medianos #}
+                <div class="form-check">
+                    {{ form_widget(song, {'attr': {'class': 'form-check-input'}}) }}
+                    {{ form_label(song, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 
-<button class="btn">{{ button_label|default('Save') }}</button>
+<button class="btn btn-primary">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
-

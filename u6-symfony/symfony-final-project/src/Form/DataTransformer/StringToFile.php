@@ -6,7 +6,7 @@ namespace App\Form\DataTransformer;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
-class FileToSymfonyFileTransformer implements DataTransformerInterface
+class StringToFile implements DataTransformerInterface
 {
     public function transform($value): mixed
     {
