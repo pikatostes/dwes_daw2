@@ -1,0 +1,15 @@
+{{ form_start(form) }}
+
+<div class="mb-3 d-flex align-items-center">
+    {{ form_row(form.user_id, {'attr': {'hidden': 'true'}}) }}
+    <p class="mb-0 ms-2">{{ app.user.id }} - {{ app.user.username }}</p>
+</div>
+
+<div class="mb-3">
+    <label for="{{ form.songs_id.vars.id }}">Select Songs:</label>
+    {{ form_widget(form.songs_id, {'attr': {'multiple': 'multiple'}}) }}
+</div>
+
+<button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}
+
