@@ -25,11 +25,10 @@ class PlaylistController extends AbstractController
     #[Route('/new', name: 'app_playlist_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $playlist = new Playlist();
+        $user = $this->getUser(); // Obtener el usuario de la sesión
 
-        // REVISAR ID PREDETERMINADO
-        // $user = $this->getUser();
-        // $playlist->setUser($user);
+        $playlist = new Playlist();
+        $playlist->setUserId($user); // Asignar el usuario actual a la playlist
 
         $form = $this->createForm(PlaylistType::class, $playlist);
         $form->handleRequest($request);
@@ -76,7 +75,7 @@ class PlaylistController extends AbstractController
     #[Route('/{id}', name: 'app_playlist_delete', methods: ['POST'])]
     public function delete(Request $request, Playlist $playlist, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$playlist->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $playlist->getId(), $request->request->get('_token'))) {
             $entityManager->remove($playlist);
             $entityManager->flush();
         }

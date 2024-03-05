@@ -18,9 +18,19 @@
             <tr>
                 <th>Songs</th>
                 <td>
-                    <ul>
+                    <ul class="list-unstyled">
                         {% for song in playlist.songsId %}
-                            <li>{{ song.title }}</li>
+                            <li class="mb-3">
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ asset('uploads/images/' ~ song.cover) }}" alt="{{ song.title }}" class="img-thumbnail mr-3" style="max-width: 50px;">
+                                    <div>
+                                        <h6>{{ song.title }}</h6>
+                                        <button class="btn btn-success btn-sm" onclick="togglePlay('{{ asset('uploads/music/' ~ song.audio) }}', 'iconPlay_{{ song.id }}')">
+                                            Play
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
                         {% endfor %}
                     </ul>
                 </td>
@@ -33,5 +43,62 @@
     <a href="{{ path('app_playlist_edit', {'id': playlist.id}) }}">Edit</a>
 
     {{ include('playlist/_delete_form.html.twig') }}
+
+    <!-- Agregado un reproductor de audio oculto -->
+    <audio id="audioPlayer" controls style="display: none;"></audio>
+
+    <!-- Script para reproducir audio -->
+    <script>
+        // Obtener el reproductor de audio y el icono
+        let player = document.getElementById("audioPlayer");
+        let iconElement;
+        let currentAudioSource = "";
+
+        function togglePlay(audioSource, iconId) { // Si la nueva fuente es igual a la fuente actual, cambiar la reproducción
+            if (currentAudioSource === audioSource) {
+                if (player.paused) {
+                    player.play();
+                } else {
+                    player.pause();
+                }
+            } else { // Cambiar la fuente del reproductor de audio
+                player.src = audioSource;
+
+                // Pausar la reproducción si se hizo clic en otro botón
+                player.pause();
+
+                // Obtener el elemento de la imagen (icono)
+                iconElement = document.getElementById(iconId);
+
+                // Restablecer la imagen de los botones anteriores
+                resetIcons();
+
+                // Actualizar la imagen y reproducir la canción
+                toggleIcon('../uploads/images/pause.png');
+                player.play();
+            }
+
+            // Almacenar la nueva fuente como la fuente actual
+            currentAudioSource = audioSource;
+        }
+
+        // Función para cambiar la imagen de reproducir/pausar
+        function toggleIcon(newImagePath) { // Verificar si el iconElement está definido
+            if (iconElement) {
+                iconElement.src = newImagePath;
+            }
+        }
+
+        // Función para restablecer la imagen de los botones anteriores
+        function resetIcons() { // Obtener todos los elementos de imagen con ID que comienza con "iconPlay_"
+            let allIcons = document.querySelectorAll('[id^="iconPlay_"]');
+
+            // Iterar sobre todos los elementos y restablecer la imagen a "play.png"
+            allIcons.forEach(function (icon) {
+                icon.src = '../uploads/images/play.png';
+            });
+        }
+    </script>
 {% endblock %}
+
 
