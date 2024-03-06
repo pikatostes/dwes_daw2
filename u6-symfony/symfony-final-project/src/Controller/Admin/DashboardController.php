@@ -26,7 +26,8 @@ class DashboardController extends AbstractDashboardController
     public function index(): Response
     {
         if (!$this->authorizationChecker->isGranted('ROLE_ADMIN')) {
-            throw $this->createAccessDeniedException('Acceso denegado.');
+            // throw $this->createAccessDeniedException('Acceso denegado.');
+            return $this->redirectToRoute('app_denied');
         }
 
         // return parent::index();

@@ -15,4 +15,9 @@ class HomeController extends AbstractController
             'controller_name' => 'HomeController',
         ]);
     }
+    // #[Route('/{any}', name: 'app_error')]
+    // public function error(): Response
+    // {
+    //     return $this->render('error/index.html.twig');
+    // }
 }

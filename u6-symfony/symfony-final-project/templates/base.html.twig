@@ -30,6 +30,11 @@
 							<li class="nav-item">
 								<a class="nav-link fs-5" href="/playlist/">Playlists</a>
 							</li>
+							{% if 'ROLE_ADMIN' in app.user.roles %}
+								<li class="nav-item">
+									<a class="nav-link fs-5" href="{{ path('admin') }}">Admin Dashboard</a>
+								</li>
+							{% endif %}
 							<li class="nav-item">
 								<a href="{{ path('app_logout') }}" class="nav-link fs-5 bg-danger">Logout</a>
 							</li>
